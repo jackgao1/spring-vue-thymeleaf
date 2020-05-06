@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://cdn.jsdelivr.net/vue.resource/1.0.3/vue-resource.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        .el-header {
+            background-color: #B3C0D1;
+            color: #333;
+            line-height: 60px;
+        }
+
+        .el-aside {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+<div id="index">
+    <el-container style="height: 500px; border: 1px solid #eee">
+        <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+            <el-menu :default-openeds="['1']">
+                <el-submenu index="1">
+                    <el-menu-item-group>
+                        <template slot="title">分组一</template>
+                        <el-menu-item index="1-1">选项1</el-menu-item>
+                        <el-menu-item index="1-2">选项2</el-menu-item>
+                    </el-menu-item-group>
+                </el-submenu>
+            </el-menu>
+        </el-aside>
+        <el-container>
+            <el-header style="text-align: right; font-size: 12px">
+                <div th:replace="main"></div>
+            </el-header>
+            <el-main>
+                <div th:replace="students"></div>
+            </el-main>
+        </el-container>
+    </el-container>
+</div>
+<script>
+    new Vue({
+        el: '#index',
+        data: {},
+        created: function () {
+
+        },
+        methods: {}
+    })
+</script>
+</body>
+</html>
