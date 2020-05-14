@@ -28,10 +28,10 @@
             <artifactId>druid</artifactId>
             <version>1.1.10</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>mysql</groupId>-->
-<!--            <artifactId>mysql-connector-java</artifactId>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>mysql</groupId>-->
+        <!--            <artifactId>mysql-connector-java</artifactId>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>com.oracle</groupId>
             <artifactId>ojdbc6</artifactId>
@@ -83,6 +83,21 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!--rabbitmq依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.amqp</groupId>
+            <artifactId>spring-rabbit-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -106,7 +121,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <dockerHost>http://192.168.1.138:2375</dockerHost>
+                    <dockerHost>http://192.168.1.137:2375</dockerHost>
                     <imageName>thymeleaf/${project.artifactId}</imageName>
                     <imageTags>
                         <imageTag>${project.version}</imageTag>
