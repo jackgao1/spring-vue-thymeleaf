@@ -15,8 +15,8 @@ public class HelloSender {
 //        user.setPassword("123");
 //        //1、使用JSONObject
 //        String jsonUser = JSONObject.toJSONString(user);
-        rabbitTemplate.convertAndSend("queue", "Hello,Rabbit!"); //direct类型
-//        rabbitTemplate.convertAndSend("exchange", "topic.message", "Hello,Rabbit!"); //topic类型
+//        rabbitTemplate.convertAndSend("queue", "Hello,Rabbit!"); //direct类型
+        rabbitTemplate.convertAndSend("exchange", "topic.message", "Hello,Rabbit!"); //topic类型
 //        rabbitTemplate.convertAndSend("fanoutExchange", "", "Hello,Rabbit!"); //fanout类型
     }
 

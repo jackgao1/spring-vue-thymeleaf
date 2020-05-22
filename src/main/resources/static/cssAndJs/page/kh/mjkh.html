@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=”viewport” content=”width=device-width, initial-scale=1, maximum-scale=1″>
+	<title>民警考核</title>
+	<link rel="stylesheet" href="/static/element-ui/element-ui.css">
+	<link rel="stylesheet" type="text/css" href="/static/font/iconfont.css">
+	<script src="/static/babel/polyfill.min.js"></script>
+	<script src="/static/babel/babel.min.js"></script>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			text-align: center;
+		}
+
+		.left {
+			text-align: left;
+		}
+
+		.right {
+			text-align: right;
+		}
+
+		h2 {
+			display: inline;
+		}
+
+		.export {
+			float: right;
+		}
+
+		.scbb {
+			float: left;
+		}
+	</style>
+</head>
+<body>
+
+<div id="mjkh" style="width: 99%">
+	<el-row :gutter="10">
+		<!-- 统计方式 - start -->
+		<el-col :span="3" class="right">
+			<span style="line-height: 40px">统计方式</span>
+		</el-col>
+		<el-col :span="6" class="left">
+			<el-radio v-model="tjfs" label="01" border @change="tjfschange">按月统计</el-radio>
+			<el-radio v-model="tjfs" label="03" border @change="tjfschange">按年统计</el-radio>
+		</el-col>
+		<!-- 统计方式 - end -->
+		<!-- 统计时间 - start -->
+		<el-col :span="3" class="right">
+			<span style="line-height: 40px">统计时间</span>
+		</el-col>
+		<el-col :span="4" class="left">
+			<el-select v-model="tjsj" playceholder="请选择">
+				<template v-if="tjfs === '01'">
+					<el-option
+							v-for="item in ysj"
+							:key="item.DM"
+							:label="item.MC"
+							:value="item.DM">
+					</el-option>
+				</template>
+				<template v-else-if="tjfs === '03'">
+					<el-option
+							v-for="item in nsj"
+							:key="item.DM"
+							:label="item.MC"
+							:value="item.DM">
+					</el-option>
+				</template>
+			</el-select>
+		</el-col>
+		<!-- 统计时间 - end -->
+		<!-- 统计单位 - start -->
+		<el-col :span="3" class="right">
+			<span style="line-height: 40px">统计单位</span>
+		</el-col>
+		<el-col :span="4" class="left">
+			<el-select v-model="tjdw" playceholder="请选择">
+				<el-option
+						v-for="item in dwsj"
+						:key="item.DM"
+						:label="item.MC"
+						:value="item.DM">
+				</el-option>
+			</el-select>
+		</el-col>
+		<!-- 统计单位 - end -->
+	</el-row>
+	<br/>
+	<div>
+		<br/>
+		<div>
+			<el-button class="scbb" type="primary" plain @click="scbb" :loading="bbloading"><i class="iconfont iconreadingalt"></i>生成报表</el-button>
+			<h2>社区民警人口管理履职情况考核表</h2>
+			<el-button class="export" type="success" plain @click="downloadFile"><i class="iconfont icondownload"></i>导出Excel</el-button>
+		</div>
+		<br/>
+
+		<template v-if="tjfs == '01'">
+			<el-table
+					:data="tableData"
+					v-loading="loading"
+					stripe
+					border
+					highlight-current-row
+					show-overflow-tooltip
+					id="out-table"
+					:key="1"
+					row-key="ID"
+					lazy
+					:load="load"
+					:tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+					style="width: 100%;">
+
+				<el-table-column label="协管队伍管理、指导履职情况">
+					<el-table-column prop="POLICENAME" label="社区民警" min-width="24px"></el-table-column>
+					<el-table-column prop="XGYNAME" label="协管员" min-width="24px"></el-table-column>
+					<el-table-column prop="XGYFS" label="协管员分数*0.7" min-width="24px"></el-table-column>
+					<el-table-column prop="XGDWFS" label="协管队伍平均分" min-width="24px"></el-table-column>
+				</el-table-column>
+				<el-table-column label="社区民警管理要素">
+					<el-table-column label="关注人群信息质量">
+						<el-table-column prop="GZRQLDJ" label="漏登记" min-width="24px"></el-table-column>
+						<el-table-column prop="GZRQWZX" label="未注销" min-width="24px"></el-table-column>
+						<el-table-column prop="GZRQYDJ" label="已登记" min-width="24px"></el-table-column>
+						<el-table-column prop="GZRQZXQK" label="注销情况" min-width="24px"></el-table-column>
+						<el-table-column prop="GZRQCQWH" label="超期维护" min-width="24px"></el-table-column>
+						<el-table-column prop="GZRQHJ" label="加扣分情况" min-width="24px"></el-table-column>
+					</el-table-column>
+					<el-table-column label="重大案（事）件涉及人员、在押对象案前居住登记情况">
+						<el-table-column prop="GADCLDJ" label="漏登记" min-width="24px"></el-table-column>
+						<el-table-column prop="GADCYZLDJ" label="有责漏登记" min-width="24px"></el-table-column>
+						<el-table-column prop="GADCYDJ" label="已登记" min-width="24px"></el-table-column>
+						<el-table-column prop="GADCZHTF" label="抓获逃犯" min-width="24px"></el-table-column>
+						<el-table-column prop="GADCHJ" label="加扣分情况" min-width="24px"></el-table-column>
+					</el-table-column>
+					<el-table-column label="实有人口信息质量">
+						<el-table-column prop="SYRKDJL" label="登记率" min-width="24px"></el-table-column>
+						<el-table-column prop="SYRKZQL" label="准确率" min-width="24px"></el-table-column>
+						<el-table-column prop="SYRKHJ" label="加扣分情况" min-width="24px"></el-table-column>
+					</el-table-column>
+					<el-table-column prop="JKFHJ" label="加扣分合计" min-width="24px"></el-table-column>
+					<el-table-column label="基本分" min-width="24px">15</el-table-column>
+					<el-table-column prop="YSDF" label="要素得分" min-width="24px"></el-table-column>
+				</el-table-column>
+				<el-table-column prop="SCORE" label="总得分" min-width="24px"></el-table-column>
+			</el-table>
+		</template>
+		<template v-else>
+			<el-table
+					:data="tableData"
+					v-loading="loading"
+					stripe
+					border
+					highlight-current-row
+					show-overflow-tooltip
+					id="out-table"
+					:key="2"
+					style="width: 100%;">
+
+				<el-table-column prop="MC" label="派出所" min-width="24px"></el-table-column>
+				<el-table-column prop="1" label="1月份" min-width="24px"></el-table-column>
+				<el-table-column prop="2" label="2月份" min-width="24px"></el-table-column>
+				<el-table-column prop="3" label="3月份" min-width="24px"></el-table-column>
+				<el-table-column prop="4" label="4月份" min-width="24px"></el-table-column>
+				<el-table-column prop="5" label="5月份" min-width="24px"></el-table-column>
+				<el-table-column prop="6" label="6月份" min-width="24px"></el-table-column>
+				<el-table-column prop="7" label="7月份" min-width="24px"></el-table-column>
+				<el-table-column prop="8" label="8月份" min-width="24px"></el-table-column>
+				<el-table-column prop="9" label="9月份" min-width="24px"></el-table-column>
+				<el-table-column prop="10" label="10月份" min-width="24px"></el-table-column>
+				<el-table-column prop="11" label="11月份" min-width="24px"></el-table-column>
+				<el-table-column prop="12" label="12月份" min-width="24px"></el-table-column>
+				<el-table-column prop="PJF" label="平均分" min-width="24px"></el-table-column>
+				<el-table-column prop="NDQZF" label="年度权重分" min-width="24px"></el-table-column>
+			</el-table>
+		</template>
+	</div>
+</div>
+
+<script src="/static/vue/vue.min.js"></script>
+<script src="/static/element-ui/element-ui.js"></script>
+<script src="/static/axios/axios.min.js"></script>
+<script src="/static/FileSaver/FileSaver.min.js"></script>
+<script src="/static/xlsx/xlsx.full.min.js"></script>
+<script type="text/babel">
+	new Vue({
+		el: '#mjkh',
+		data: {
+			tjfs: '01', // 统计方式
+			ysj: [], // 月数据
+			nsj: [], // 年数据
+			tjsj: '', // 统计时间
+			dwsj: [], // 单位数据
+			tjdw: '', // 统计单位
+			file: '', // 文件路径
+			bbloading: false, // 生成报表按钮加载中
+			tableData: [], // 表格数据
+			loading: false // 表格加载中
+		},
+		methods: {
+			tjfschange() {
+				const {tjfs} = this
+				if (tjfs === '01') {
+					this.getMonth();
+				} else if (tjfs === '03') {
+					this.getYear()
+				}
+			},
+			getMonth() {
+				const that = this;
+				axios.get('/getMonth')
+					.then(function (res) {
+						const {data} = res
+						that.ysj = data
+						that.tjsj = data[0].DM
+					})
+					.catch(function (err) {
+						console.log(err);
+					});
+			},
+			getYear() {
+				const that = this;
+				axios.get('/getYear')
+					.then(function (response) {
+						const {data} = response
+						that.nsj = data
+						that.tjsj = data[0].DM
+					})
+					.catch(function (err) {
+						console.log(err);
+					});
+			},
+			getDw() {
+				const that = this;
+				axios.get('/getDw')
+					.then(function (res) {
+						const {data} = res
+						data.splice(0, 1)
+						that.dwsj = data
+						that.tjdw = data[0].DM
+					})
+					.catch(function (err) {
+						console.log(err);
+					});
+			},
+			getData() {
+				this.loading = true;
+				const that = this;
+				const {tjfs, tjsj, tjdw} = this
+				axios.post('/mjkh/getData', {tjfs, tjsj, tjdw})
+					.then(function (res) {
+						const {data} = res
+						that.tableData = data
+						that.loading = false
+					})
+					.catch(function (err) {
+						console.log(err);
+						that.loading = false
+						that.$message({
+							showClose: true,
+							message: '出现错误!',
+							type: 'error'
+						});
+					});
+			},
+			downloadFile() {
+				// 将一个table对象转换成一个sheet对象
+				const wb = XLSX.utils.table_to_book(document.getElementById("out-table"), { raw: true });
+				const wbout = XLSX.write(wb, {bookType: 'xlsx', type: 'binary'})
+				saveAs(new Blob([this.s2ab(wbout)], { type: 'application/octet-stream'}),"民警考核.xlsx")
+			},
+			s2ab(s) {
+				if (typeof ArrayBuffer != 'undefined') {
+					let buf = new ArrayBuffer(s.length);
+					let view = new Uint8Array(buf);
+					for (let i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+					return buf;
+				} else {
+					var buf = new Array(s.length);
+					for (var i = 0; i != s.length; ++i) buf[i] = s.charCodeAt(i) & 0xFF;
+					return buf;
+				}
+			},
+			scbb() {
+				const that = this;
+				this.$confirm('生成报表意味着该数据正确,即将进行存档,可重复生成,用时需一分钟左右.', '生成报表?', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消'
+				}).then(() => {
+					that.bbloading = true;
+					const {tjfs, tjsj, tjdw} = that
+					axios.post('/mjkh/scbb', {tjsj})
+						.then(function (res) {
+							const {data} = res
+							that.$message({
+								message: `成功存档${data}条数据!`,
+								type: 'success',
+								center: true
+							});
+							that.bbloading = false
+						})
+						.catch(function (err) {
+							console.log(err);
+							that.bbloading = false
+							that.$message({
+								showClose: true,
+								message: '出现错误!',
+								type: 'error'
+							});
+						});
+				});
+			},
+			load(tree, treeNode, resolve) {
+				const that = this;
+				const {tjsj, tjdw} = that
+				const policeid = tree.POLICEID
+				axios.post('/mjkh/getXgy', {tjsj, tjdw, policeid})
+					.then(function (res) {
+						resolve(res.data)
+					})
+					.catch(function (err) {
+						console.log(err);
+						that.$message({
+							showClose: true,
+							message: '出现错误!',
+							type: 'error'
+						});
+					});
+			}
+		},
+		mounted() {
+			this.getMonth()
+			this.getDw()
+		},
+		watch: {
+			tjsj() {
+				if (this.tjdw) {
+					this.getData()
+				}
+			},
+			tjdw() {
+				if (this.tjsj) {
+					this.getData()
+				}
+			}
+		}
+	})
+</script>
+</body>
+</html>

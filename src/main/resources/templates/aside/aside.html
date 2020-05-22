@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>首页</title>
+    <title>侧边栏</title>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
@@ -18,29 +18,32 @@
     </style>
 </head>
 <body>
-<div id="main">
-    <img src="../static/img/fwbq.jpg" class="img"/>
-    <span>众恒技术中台</span>
+<div id="aside" th:fragment="aside">
+    <el-menu>
+        <el-submenu index="1">
+            <template slot="title">分组一</template>
+            <el-menu-item-group>
+                <el-menu-item index="1-1" @click="get()">选项1</el-menu-item>
+                <el-menu-item index="1-2" @click="get()">选项2</el-menu-item>
+            </el-menu-item-group>
+        </el-submenu>
+    </el-menu>
 </div>
-
 </body>
+
 <script>
     new Vue({
-        el: '#main',
+        el: '#aside',
         data: {
-            main: ''
+            aside: ''
         },
         created: function () {
-            let _this = this
-            axios.get('/main')
-                .then(function (response) {
-                    _this.main = response.data
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
         },
-        methods: {}
+        methods: {
+            get() {
+                document.getElementById("mains").innerHTML = "<p>段落</p>";
+            }
+        }
     })
 </script>
 </html>

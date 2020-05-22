@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>首页</title>
@@ -30,29 +30,21 @@
 </head>
 <body>
 <div id="index">
+<!--    <div th:text="${name}">sss</div>-->
     <el-container style="height: 100%; border: 1px solid #eee">
         <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
-            <el-menu>
-                <el-submenu index="1">
-                    <template slot="title">分组一</template>
-                    <el-menu-item-group>
-                        <el-menu-item index="1-1" @click="get()">选项1</el-menu-item>
-                        <el-menu-item index="1-2" @click="get()">选项2</el-menu-item>
-                    </el-menu-item-group>
-                </el-submenu>
-            </el-menu>
+            <div th:include="aside/aside :: aside"/>
         </el-aside>
         <el-container>
             <el-header style="text-align: center;font-size: 40px;color: darkolivegreen">
-                <div th:replace="main"></div>
+                <div th:include="head/head :: main"/>
             </el-header>
             <el-main id="mains">
-                <div th:replace="students.html"></div>
+                <div th:include="main/students :: students"/>
             </el-main>
         </el-container>
     </el-container>
 </div>
-
 </body>
 <script>
     new Vue({
@@ -61,11 +53,7 @@
         created: function () {
 
         },
-        methods: {
-            get() {
-                document.getElementById("mains").innerHTML = "<p>段落</p>";
-            }
-        }
+        methods: {}
     })
 </script>
 </html>

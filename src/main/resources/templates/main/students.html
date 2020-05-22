@@ -24,32 +24,32 @@
     </style>
 </head>
 <body>
-<div id="students">
+<div id="students" th:fragment="students">
     <el-table
             :data="tableData"
             style="width: 100%"
             :row-class-name="tableRowClassName"
             border>
         <el-table-column
-                prop="student_id"
+                prop="ID"
                 label="号码"
                 width="180">
         </el-table-column>
         <el-table-column
-                prop="name"
+                prop="NAME"
                 label="姓名"
                 width="180">
         </el-table-column>
         <el-table-column
-                prop="sex"
+                prop="SEX"
                 label="性别">
         </el-table-column>
         <el-table-column
-                prop="birth"
+                prop="BIRTH"
                 label="生日">
         </el-table-column>
         <el-table-column
-                prop="politily"
+                prop="POLITILY"
                 label="专业">
         </el-table-column>
     </el-table>
@@ -71,14 +71,48 @@
     new Vue({
         el: '#students',
         data: {
+            tableRowClassName:"表格",
             total: 1000,
-            tableData: []
+            tableData: [{
+                "ID": "767",
+                "NAME": "醉巧",
+                "SEX": "女性",
+                "BIRTH": "1998-01-12",
+                "POLITILY": "绘画（专业基础）"
+            }, {"ID": "768", "NAME": "雅香", "SEX": "男性", "BIRTH": "1991-05-28", "POLITILY": "中外美术史"}, {
+                "ID": "769",
+                "NAME": "忆枫",
+                "SEX": "男性",
+                "BIRTH": "1991-06-24",
+                "POLITILY": "建筑欣赏"
+            }, {"ID": "770", "NAME": "雪瑶", "SEX": "女性", "BIRTH": "1996-07-27", "POLITILY": "实验性雕塑 "}, {
+
+                "ID": "771",
+                "NAME": "靖柔",
+                "SEX": "女性",
+                "BIRTH": "1994-10-25",
+                "POLITILY": "设计概论"
+            }, {"ID": "772", "NAME": "问风", "SEX": "男性", "BIRTH": "1996-09-24", "POLITILY": "中国话剧"}, {
+
+                "ID": "773",
+                "NAME": "雪绿",
+                "SEX": "女性",
+                "BIRTH": "1991-01-12",
+                "POLITILY": "图形设计"
+            }, {"ID": "774", "NAME": "诗槐", "SEX": "女性", "BIRTH": "1990-08-04", "POLITILY": "中国传统雕塑"}, {
+
+                "ID": "775",
+                "NAME": "寄蓝",
+                "SEX": "男性",
+                "BIRTH": "1998-07-12",
+                "POLITILY": "现代雕塑"
+            }, {"ID": "776", "NAME": "山雁", "SEX": "男性", "BIRTH": "1998-12-14", "POLITILY": "名画解析"}]
         },
         created: function () {
-            console.log(2)
-            let _this = this
+            var _this = this
             axios.get('/getage?age=1')
                 .then(function (response) {
+                    console.log("OK")
                     console.log(JSON.stringify(response.data))
                     _this.tableData = response.data
                     _this.total = 30
@@ -89,8 +123,7 @@
         },
         methods: {
             handleCurrentChange(val) {
-                console.log(1)
-                let _this = this
+                var _this = this
                 axios.get('/getage?age=' + val)
                     .then(function (response) {
                         _this.tableData = response.data

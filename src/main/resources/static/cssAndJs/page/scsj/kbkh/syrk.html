@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name=”viewport” content=”width=device-width, initial-scale=1, maximum-scale=1″>
+	<title>实有人口</title>
+	<link rel="stylesheet" href="/static/element-ui/element-ui.css">
+	<link rel="stylesheet" type="text/css" href="/static/font/iconfont.css">
+	<script src="/static/babel/polyfill.min.js"></script>
+	<script src="/static/babel/babel.min.js"></script>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			text-align: center;
+		}
+
+		.left {
+			text-align: left;
+		}
+
+		.right {
+			text-align: right;
+		}
+
+		h2 {
+			display: inline;
+		}
+
+		.import {
+			float: left;
+		}
+
+		.export {
+			float: right;
+		}
+
+	</style>
+</head>
+<body>
+
+<div id="syrk" style="width: 99%">
+	<el-row :gutter="10">
+		<!-- 统计方式 - start -->
+		<el-col :span="3" class="right">
+			<span style="line-height: 40px">统计方式</span>
+		</el-col>
+		<el-col :span="7" class="left">
+			<el-radio v-model="tjfs" label="01" border @change="tjfschange">按月统计</el-radio>
+			<el-radio v-model="tjfs" label="02" border @change="tjfschange">按季统计</el-radio>
+			<el-radio v-model="tjfs" label="03" border @change="tjfschange">按年统计</el-radio>
+		</el-col>
+		<!-- 统计方式 - end -->
+		<!-- 统计时间 - start -->
+		<el-col :span="3" class="right">
+			<span style="line-height: 40px">统计时间</span>
+		</el-col>
+		<el-col :span="4" class="left">
+			<el-select v-model="tjsj" playceholder="请选择">
+				<template v-if="tjfs === '01'">
+					<el-option
+							v-for="item in ysj"
+							:key="item.DM"
+							:label="item.MC"
+							:value="item.DM">
+					</el-option>
+				</template>
+				<template v-else-if="tjfs === '02'">
+					<el-option
+							v-for="item in jsj"
+							:key="item.DM"
+							:label="item.MC"
+							:value="item.DM">
+					</el-option>
+				</template>
+				<template v-else-if="tjfs === '03'">
+					<el-option
+							v-for="item in nsj"
+							:key="item.DM"
+							:label="item.MC"
+							:value="item.DM">
+					</el-option>
+				</template>
+			</el-select>
+		</el-col>
+		<!-- 统计时间 - end -->
+		<!-- 统计单位 - start -->
+		<el-col :span="3" class="right">
+			<span style="line-height: 40px">统计单位</span>
+		</el-col>
+		<el-col :span="4" class="left">
+			<el-select v-model="tjdw" playceholder="请选择">
+				<el-option
+						v-for="item in dwsj"
+						:key="item.DM"
+						:label="item.MC"
+						:value="item.DM">
+				</el-option>
+			</el-select>
+		</el-col>
+		<!-- 统计单位 - end -->
+	</el-row>
+	<br/>
+	<!--<el-row>-->
+		<!--&lt;!&ndash; 选择上传导出Excel - start &ndash;&gt;-->
+		<!--<el-col :span="4" style="margin-left: 8%">-->
+			<!--<input type="file" id="uploadEventFile" style="display:none" v-model="file"/>-->
+			<!--<el-input :value="file" disabled></el-input>-->
+		<!--</el-col>-->
+		<!--<el-col :span="12" class="left" style="margin-left: 10px">-->
+			<!--<el-button type="primary" plain @click="importFile">选择Excel</el-button>-->
+			<!--<el-button type="submit" plain @click="uploadFile" :loading="scloading">上传Excel</el-button>-->
+			<!--<el-button type="success" plain @click="downloadFile">导出Excel</el-button>-->
+		<!--</el-col>-->
+		<!--&lt;!&ndash; 选择上传导出Excel - end &ndash;&gt;-->
+	<!--</el-row>-->
+	<div>
+		<br/>
+		<div>
+			<div class="import">
+				<input type="file" id="uploadEventFile" style="display:none;" v-model="file"/>
+				<el-input :value="file" disabled style="width: 200px"></el-input>
+				<el-button type="primary" plain @click="importFile"><i class="iconfont iconcalendar-unavailable"></i>选择Excel</el-button>
+				<el-button type="submit" plain @click="uploadFile" :loading="scloading"><i class="iconfont iconupload"></i>上传Excel</el-button>
+			</div>
+			<h2>实有人口信息质量表</h2>
+			<el-button class="export" type="success" plain @click="downloadFile"><i class="iconfont icondownload"></i>导出Excel</el-button>
+		</div>
+		<!--<h2>实有人口信息质量表</h2>-->
+		<br/>
+
+		<el-table
+				:data="tableData"
+				v-loading="loading"
+				stripe
+				border
+				highlight-current-row
+				id="out-table"
+				style="width: 100%;">
+			<el-table-column prop="PCSMC" label="派出所" min-width="150px"></el-table-column>
+			<el-table-column prop="POLICENAME" label="社区民警" min-width="80px" v-if="tjdw != '310113000000'"></el-table-column>
+			<el-table-column prop="JCQY" label="检查区域" min-width="200px" v-if="tjdw != '310113000000'"></el-table-column>
+			<el-table-column prop="SJCC" label="市局检查" v-if="tjdw != '310113000000'"></el-table-column>
+			<el-table-column prop="DJL" label="登记率"></el-table-column>
+			<el-table-column prop="ZQL" label="准确率"></el-table-column>
+			<el-table-column prop="HJ" label="合计"></el-table-column>
+		</el-table>
+	</div>
+</div>
+
+<script src="/static/vue/vue.min.js"></script>
+<script src="/static/element-ui/element-ui.js"></script>
+<script src="/static/axios/axios.min.js"></script>
+<script src="/static/FileSaver/FileSaver.min.js"></script>
+<script src="/static/xlsx/xlsx.full.min.js"></script>
+<script type="text/babel">
+	new Vue({
+		el: '#syrk',
+		data: {
+			tjfs: '01', // 统计方式
+			ysj: [], // 月数据
+			jsj: [], // 季数据
+			nsj: [], // 年数据
+			tjsj: '', // 统计时间
+			dwsj: [], // 单位数据
+			tjdw: '', // 统计单位
+			file: '', // 文件路径
+			scloading: false, // 上传按钮加载中
+			tableData: [], // 表格数据
+			loading: false // 表格加载中
+		},
+		methods: {
+			tjfschange() {
+				const {tjfs} = this
+				if (tjfs === '01') {
+					this.getMonth();
+				} else if (tjfs === '02') {
+					this.getQuarter()
+				} else if (tjfs === '03') {
+					this.getYear()
+				}
+			},
+			getMonth() {
+				const that = this;
+				axios.get('/getMonth')
+					.then(function (res) {
+						const {data} = res
+						that.ysj = data
+						that.tjsj = data[0].DM
+					})
+					.catch(function (err) {
+						console.log(err);
+					});
+			},
+			getQuarter() {
+				const that = this;
+				axios.get('/getQuarter')
+					.then(function (res) {
+						const {data} = res
+						that.jsj = data
+						that.tjsj = data[0].DM
+					})
+					.catch(function (err) {
+						console.log(err);
+					});
+			},
+			getYear() {
+				const that = this;
+				axios.get('/getYear')
+					.then(function (response) {
+						const {data} = response
+						that.nsj = data
+						that.tjsj = data[0].DM
+					})
+					.catch(function (err) {
+						console.log(err);
+					});
+			},
+			getDw() {
+				const that = this;
+				axios.get('/getDw')
+					.then(function (res) {
+						const {data} = res
+						that.dwsj = data
+						that.tjdw = data[0].DM
+					})
+					.catch(function (err) {
+						console.log(err);
+					});
+			},
+			getData() {
+				this.loading = true;
+				const that = this;
+				const {tjfs, tjsj, tjdw} = this
+				axios.post('/syrk/getData', {tjfs, tjsj, tjdw})
+					.then(function (res) {
+						const {data} = res
+						if (!data) {
+							that.$message({
+								message: '该时间没有数据!',
+								type: 'error',
+								center: true,
+								duration: 1000
+							});
+						}
+						that.tableData = data
+						that.loading = false
+					})
+					.catch(function (err) {
+						console.log(err);
+						that.loading = false
+						this.$message({
+							showClose: true,
+							message: '出现错误!',
+							type: 'error'
+						});
+					});
+			},
+			importFile() {
+				document.getElementById("uploadEventFile").click();
+			},
+			uploadFile() {
+				const that = this
+				const {file} = this;
+				const prefix = file.substring(file.lastIndexOf("."));
+				if (!file) {
+					this.$message({
+						message: '请选择Excel文件!',
+						type: 'warning',
+						center: true
+					});
+					return
+				} else if (prefix != '.xls' && prefix != '.xlsx') {
+					this.$message({
+						message: '只能选择xls或者xlsx格式的文件!',
+						type: 'warning',
+						center: true
+					});
+					return
+				}
+				that.scloading = true
+				//创建formdata对象
+				var formData = new FormData();
+				formData.append("multfile", document.querySelector('input[type="file"]').files[0]);
+				var instance = axios.create({
+					headers: {'Content-Type': 'multipart/form-data'}
+				})
+				instance.post('/syrk/uploadFile', formData)
+					.then(function (res) {
+						const {data} = res
+						if (data.result) {
+							that.$alert(`成功上传${data.msg}条!`, '成功', {
+								confirmButtonText: '确定'
+							});
+						} else {
+							that.$alert(data.msg, '异常', {
+								confirmButtonText: '确定'
+							});
+						}
+						that.file = ''
+						that.scloading = false
+						that.getData()
+					})
+					.catch(function (err) {
+						console.log(err)
+						that.scloading = false
+						that.$alert("出现异常,请保留上传文件并联系管理员!", '异常', {
+							confirmButtonText: '确定'
+						});
+					})
+			},
+			downloadFile() {
+				// 将一个table对象转换成一个sheet对象
+				const wb = XLSX.utils.table_to_book(document.getElementById("out-table"), { raw: true });
+				const wbout = XLSX.write(wb, {bookType: 'xlsx', type: 'binary'})
+				saveAs(new Blob([this.s2ab(wbout)], { type: 'application/octet-stream'}),"实有人口.xlsx")
+			},
+			s2ab(s) {
+				if (typeof ArrayBuffer != 'undefined') {
+					let buf = new ArrayBuffer(s.length);
+					let view = new Uint8Array(buf);
+					for (let i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+					return buf;
+				} else {
+					var buf = new Array(s.length);
+					for (var i = 0; i != s.length; ++i) buf[i] = s.charCodeAt(i) & 0xFF;
+					return buf;
+				}
+			}
+		},
+		mounted() {
+			this.getMonth()
+			this.getDw()
+		},
+		watch: {
+			tjsj() {
+				if (this.tjdw) {
+					this.getData()
+				}
+			},
+			tjdw() {
+				if (this.tjsj) {
+					this.getData()
+				}
+			}
+		}
+	})
+</script>
+</body>
+</html>

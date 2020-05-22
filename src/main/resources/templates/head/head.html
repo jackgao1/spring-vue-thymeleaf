@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>主屏幕</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://cdn.jsdelivr.net/vue.resource/1.0.3/vue-resource.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<div id="main" th:fragment="main">
+    <img src="../../static/img/logo.png" style=" height: 45px;width: 45px;"/>
+    <span>众恒技术中台</span>
+</div>
+</body>
+
+<script>
+    new Vue({
+        el: '#main',
+        data: {
+            main: ''
+        },
+        created: function () {
+            var _this = this
+            axios.get('/main')
+                .then(function (response) {
+                    _this.main = response.data
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        },
+        methods: {}
+    })
+</script>
+</html>
